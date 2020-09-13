@@ -1,7 +1,14 @@
-# Containers Architecture
+## Program to simulate a basic docker container
+Build: go build -o container container.go
+running the program with command "run" <./container run>  will re-run the current executable by passing child as the first argument.
+passing Cloneflags to SysProcAttr structer will namespaces to the program. Next we need to changing the filesystem from host to another place.
+syscall.PivotRoot("rootfs", "rootfs/oldrootfs") Tell the OS to move the current directory at `/` to `rootfs/oldrootfs`
+os.Chdir("/") swap the new rootfs directory to `/`
+
+## Containers Architecture
 Container is a lightweight VM that uses the host OS kernel to create an isolated environment and share resources on the host machine. 
 
-There are 3 parts of a Container
+There are 3 imporant parts for a Container
 ### Namespaces
 Namespaces provide the isolation needed to run multiple containers on one machine while giving each what appears like it’s own environment
 1. PID: The pid namespace gives a process and its children their own view of a subset of the processes in the system. Think of it as a mapping table. When a process in a pid namespace asks the kernel for a list of processes, the kernel looks in the mapping table. If the process exists in the table the mapped ID is used instead of the real ID. If it doesn’t exist in the mapping table, the kernel pretends it doesn’t exist at all. The pid namespace makes the first process created within it pid 1 (by mapping whatever its host ID is to 1), giving the appearance of an isolated process tree in the container.
